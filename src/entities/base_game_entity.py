@@ -7,7 +7,7 @@ class BaseGameEntity ():
 
     def __init__(self, x, y, world):
         self.ID = self._set_ID()
-        self.position = pygame.Vector2((x, y))
+        self.position: pygame.Vector2 = pygame.Vector2((x, y))
         self.environment = world
 
     def _set_ID(self) -> int:
