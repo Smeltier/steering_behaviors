@@ -5,13 +5,13 @@ class StateMachine ():
         self.current_state  = start_state
         self.previous_state = None
 
-        self.update()
+        self.update(0)
 
-    def update(self):
+    def update(self, delta_time):
         """ Atualiza a Máquina de Estados. """
 
         if not self.current_state: return
-        self.current_state.execute()
+        self.current_state.execute(delta_time)
     
     def change_state(self, state):
         """ Troca o estado atual. """
