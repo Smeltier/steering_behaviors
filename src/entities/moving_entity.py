@@ -11,7 +11,7 @@ class MovingEntity (BaseGameEntity):
         super().__init__(x, y, world)
 
         self.velocity = pygame.Vector2()
-        self.acceleration = pygame.Vector2((0, 0))
+        self.acceleration = pygame.Vector2()
         self.angular_acceleration = 0
         self.orientation = 0.0
         self.rotation = 0.0
@@ -69,20 +69,22 @@ class MovingEntity (BaseGameEntity):
         self.angular_acceleration = 0.0
 
         self._apply_force(steering.linear)
-        self.angular_acceleration += steering.angular
-
-        if abs(self.angular_acceleration) > self.max_angular_acceleration:
-            self.angular_acceleration = math.copysign(self.max_angular_acceleration, self.angular_acceleration)
-
         self.velocity += self.acceleration * delta_time
         if self.velocity.length() > self.max_speed:
             self.velocity.scale_to_length(self.max_speed)
         self.position += self.velocity * delta_time
 
+        self.angular_acceleration += steering.angular
+        if abs(self.angular_acceleration) > self.max_angular_acceleration:
+            self.angular_acceleration = math.copysign(self.max_angular_acceleration, self.angular_acceleration)
+
         self.rotation += self.angular_acceleration * delta_time
         if abs(self.rotation) > self.max_rotation:
             self.rotation = math.copysign(self.max_rotation, self.rotation)
         self.orientation += self.rotation * delta_time
+        self.orientation %= (2 * math.pi)
+
+        self._limit_entity()
 
         eps = 1e-6
         if self.velocity.length_squared() > eps:
