@@ -1,11 +1,15 @@
 import math
-from src.states.state import State
+from src.states.single_target_state import SingleTargetState
 from src.outputs.steering_output import SteeringOutput
 
-class Arrive (State):
+class Arrive (SingleTargetState):
+
     def __init__(self, entity, target, slow_radius=100, target_radius=10, time_to_target=0.1):
-        super().__init__(entity)
-        self.target = target
+        super().__init__(entity, target)
+
+        if time_to_target <= 0:
+            raise ValueError("time_to_target não pode ser zero ou negativo.")
+
         self.slow_radius = slow_radius
         self.target_radius = target_radius
         self.time_to_target = time_to_target
@@ -24,28 +28,40 @@ class Arrive (State):
     def get_steering(self) -> SteeringOutput:
         steering = SteeringOutput()
 
-        if not self.target:
-            return steering
+        if not self.target: return steering
+
+        try:
+            self.direction = self.target.position - self.entity.position
+            self.distance = self.direction.length()
+
+            if self.distance < self.target_radius:
+                return SteeringOutput()
             
-        self.direction = self.target.position - self.entity.position
-        self.distance = self.direction.length()
+            if self.distance > self.slow_radius:
+                target_speed = self.entity.max_speed
+            else:
+                target_speed = self.entity.max_speed * self.distance / self.slow_radius
 
-        if self.distance < self.target_radius:
-            return SteeringOutput()
+            target_velocity = self.direction.normalize()
+            target_velocity *= target_speed
+
+            steering.linear = target_velocity - self.entity.velocity
+            steering.linear /= self.time_to_target
+
+            if steering.linear.length() > self.entity.max_acceleration:
+                steering.linear.scale_to_length(self.entity.max_acceleration)
+
+            steering.angular = 0
+            return steering
+
+        except AttributeError as e:
+            print(f"[WARNING] Falha ao calcular steering Arrive (Atributo faltando): {e}")
+            return steering
         
-        if self.distance > self.slow_radius:
-            target_speed = self.entity.max_speed
-        else:
-            target_speed = self.entity.max_speed * self.distance / self.slow_radius
+        except ZeroDivisionError:
+            print(f"[ERROR] time_to_target é zero no Arrive.get_steering!")
+            return steering
 
-        target_velocity = self.direction.normalize()
-        target_velocity *= target_speed
-
-        steering.linear = target_velocity - self.entity.velocity
-        steering.linear /= self.time_to_target 
-
-        if steering.linear.length() > self.entity.max_acceleration:
-            steering.linear.scale_to_length(self.entity.max_acceleration)
-
-        steering.angular = 0
-        return steering
+        except Exception as e:
+            print(f"[ERROR] Erro inesperado no Arrive.get_steering: {e}")
+            return steering
