@@ -1,13 +1,19 @@
 import pygame
 
 from src.outputs.steering_output import SteeringOutput
-from src.states.state import State
+from src.states.single_target_state import SingleTargetState
 
-class Flee (State):
+class Flee (SingleTargetState):
 
     def __init__(self, entity, target):
-        super().__init__(entity)
-        self.target = target
+        super().__init__(entity, target)
+
+    def enter(self):
+        print(f"[DEBUG] {self.entity.ID} -> Flee")
+        self.entity.change_color("yellow")
+
+    def exit(self):
+        pass
 
     def execute(self, delta_time):
         steering = self.get_steering()
@@ -18,20 +24,22 @@ class Flee (State):
 
         if not self.target: return steering
 
-        direction = self.entity.position - self.target.position
+        try:
+            direction = self.entity.position - self.target.position
 
-        if direction.length_squared() == 0:
+            if direction.length_squared() == 0:
+                return steering
+
+            direction.normalize_ip()
+            steering.linear = direction * self.entity.max_acceleration
+            steering.angular = 0
+
             return steering
 
-        direction.normalize_ip()
-        steering.linear = direction * self.entity.max_acceleration
-        steering.angular = 0
-
-        return steering
-
-    def enter(self):
-        print(f"[DEBUG] {self.entity.ID} -> Flee")
-        self.entity.change_color("yellow")
-
-    def exit(self):
-        pass
+        except AttributeError as e:
+            print(f"[WARNING] Falha ao calcular steering (Atributo faltando): {e}")
+            return steering
+        
+        except Exception as e:
+            print(f"[ERROR] Erro inesperado no Flee.get_steering: {e}")
+            return steering

@@ -1,17 +1,26 @@
 class StateMachine ():
 
     def __init__(self, owner, start_state=None):
+        if not owner:
+            raise ValueError("O 'owner' da StateMachine não pode ser None.")
+
         self.owner          = owner
         self.current_state  = start_state
         self.previous_state = None
 
-        self.update(0)
+        if self.current_state:
+            self.current_state.enter()
 
     def update(self, delta_time):
         """ Atualiza a Máquina de Estados. """
 
         if not self.current_state: return
-        self.current_state.execute(delta_time)
+
+        try:
+            self.current_state.execute(delta_time)
+        except Exception as e:
+            print(f"[ERROR] Falha no {self.current_state}.execute(): {e}")
+            self.current_state = None
     
     def change_state(self, state):
         """ Troca o estado atual. """
@@ -24,7 +33,12 @@ class StateMachine ():
         self.previous_state = self.current_state
         self.current_state = state
         
-        self.current_state.enter()
+        try:
+            self.current_state.enter()
+            
+        except Exception as e:
+            print(f"[ERROR] Falha no {self.current_state}.enter(): {e}")
+            self.current_state = None
 
     def revert_to_previous_state(self):
         """ Troca para o estado anterior. """

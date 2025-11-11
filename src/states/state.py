@@ -5,6 +5,8 @@ from src.outputs.steering_output import SteeringOutput
 class State ():
 
     def __init__(self, entity):
+        if not entity:
+            raise ValueError('A entidade (entity) não pode ser None.')
         self.entity = entity
 
     @abstractmethod

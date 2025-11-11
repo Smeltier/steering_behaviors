@@ -29,12 +29,12 @@ def main():
         WIDTH // 4, 
         HEIGHT // 4, 
         world, 
-        max_speed=300,
-        max_acceleration=500,
+        max_speed=50,
+        max_acceleration=100,
     )
 
     entity_one.state_machine.change_state(Arrive(entity_one, entity_two))
-    # entity_two.state_machine.change_state(Flee(entity_two, entity_one))
+    entity_two.state_machine.change_state(Flee(entity_two, entity_one))
 
     world.add_entity(entity_one)
     world.add_entity(entity_two)
