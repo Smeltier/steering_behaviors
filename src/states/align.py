@@ -6,7 +6,7 @@ from src.outputs.steering_output import SteeringOutput
 
 class Align (SingleTargetState):
 
-    def __init__(self, entity, target, slow_radius=50, target_radius=2.0, time_to_target=0.001, max_rotation=50, max_angular_acceleration=1000):
+    def __init__(self, entity, target, slow_radius, target_radius, time_to_target, max_rotation, max_angular_acceleration):
         super().__init__(entity, target)
 
         if time_to_target <= 0:
