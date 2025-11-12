@@ -6,7 +6,7 @@ from src.states.face import Face
 from src.outputs.steering_output import SteeringOutput
 from src.extra.steering_target import SteeringTarget
 
-class Wander (Face):
+class Wander (Face): 
     def __init__(self, entity, target, slow_radius=50, target_radius=2, time_to_target=0.001,
                  max_rotation=50, max_angular_acceleration=1000, wander_offset=20, wander_radius=50,
                  wander_rate=1.0, max_acceleration=100):
