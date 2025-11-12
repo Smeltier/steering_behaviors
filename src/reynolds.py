@@ -5,11 +5,10 @@ from src.world import World
 from src.entities.moving_entity import MovingEntity
 from src.states.cohesion import Cohesion
 from src.states.separation import Separation
-from src.states.align import Align
-# from src.states.wander
+from src.states.alignment import Alignment
+from src.states.wander import Wander
 from src.states.blended_steering import BlendedSteering
 from src.outputs.behavior_and_weight import BehaviorAndWeight
-
 
 def main():
     pygame.init()
@@ -34,7 +33,7 @@ def main():
             x=x,
             y=y,
             world=world,
-            max_speed=200,
+            max_speed=50,
             max_acceleration=150,
         )
 
@@ -42,10 +41,13 @@ def main():
         agents.append(entity)
 
     for agent in agents:
+        wander_target = MovingEntity(0, 0, world) 
+
         behaviors = [
-            BehaviorAndWeight(Cohesion(agent), weight=0.6),
-            BehaviorAndWeight(Separation(agent), weight=1.2),
-            # BehaviorAndWeight(Align(agent, world), weight=0.8),
+            BehaviorAndWeight(Separation(agent),            weight=2.0),
+            BehaviorAndWeight(Alignment(agent),             weight=1.2),
+            BehaviorAndWeight(Cohesion(agent, threshold=100),              weight=1.0),
+            BehaviorAndWeight(Wander(agent, wander_target), weight=0.2)
         ]
 
         blended = BlendedSteering(agent, behaviors)
@@ -64,7 +66,6 @@ def main():
         pygame.display.flip()
 
     pygame.quit()
-
 
 if __name__ == "__main__":
     main()

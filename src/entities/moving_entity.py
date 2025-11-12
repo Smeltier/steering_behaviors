@@ -41,15 +41,35 @@ class MovingEntity (BaseGameEntity):
         return pygame.Vector2(math.cos(self.orientation), math.sin(self.orientation))
 
     def draw(self, screen):
-        direction = self.get_direction()
-        tip = self.position + direction * 15
+        # direction = self.get_direction()
+        # tip = self.position + direction * 15
 
-        pygame.draw.line(screen, 'white',
-                        (int(self.position.x), int(self.position.y)),
-                        (int(tip.x), int(tip.y)), 2)
-        pygame.draw.circle(screen, self.color,
-                        (int(self.position.x), int(self.position.y)), 6)
+        # pygame.draw.line(screen, 'white',
+        #                 (int(self.position.x), int(self.position.y)),
+        #                 (int(tip.x), int(tip.y)), 2)
+        # pygame.draw.circle(screen, self.color,
+        #                 (int(self.position.x), int(self.position.y)), 6)
 
+        if self.velocity.length() > 0:
+            direction = self.velocity.normalize()        
+            line_length = 15  
+            line_end = self.position + direction * line_length
+
+            pygame.draw.line(screen, "white",  
+                            (int(self.position.x), int(self.position.y)),
+                            (int(line_end.x), int(line_end.y)), 2) 
+
+            direction = pygame.math.Vector2(math.cos(self.orientation), math.sin(self.orientation))
+            line_length = 10
+            line_end = self.position + direction * line_length
+
+            pygame.draw.line(screen, "grey",  
+                            (int(self.position.x), int(self.position.y)),
+                            (int(line_end.x), int(line_end.y)), 2)
+
+
+        pygame.draw.circle(screen, self.color, 
+                           (int(self.position.x), int(self.position.y)), 8)
 
     def change_color(self, color: str) -> None:
         """ Troca a cor da entidade. """
@@ -62,38 +82,14 @@ class MovingEntity (BaseGameEntity):
             self.state_machine.update(delta_time)
 
     def apply_steering(self, steering, delta_time):
-        if not steering:
-            return
+        self.velocity += steering.linear * delta_time
 
-        self.acceleration = pygame.Vector2()
-        self.angular_acceleration = 0.0
-
-        self._apply_force(steering.linear)
-        self.velocity += self.acceleration * delta_time
         if self.velocity.length() > self.max_speed:
             self.velocity.scale_to_length(self.max_speed)
+
         self.position += self.velocity * delta_time
+        self.orientation += steering.angular * delta_time
 
-        self.angular_acceleration += steering.angular
-        if abs(self.angular_acceleration) > self.max_angular_acceleration:
-            self.angular_acceleration = math.copysign(self.max_angular_acceleration, self.angular_acceleration)
-
-        self.rotation += self.angular_acceleration * delta_time
-        if abs(self.rotation) > self.max_rotation:
-            self.rotation = math.copysign(self.max_rotation, self.rotation)
-        self.orientation += self.rotation * delta_time
-        self.orientation %= (2 * math.pi)
-
-        self._limit_entity()
-
-        eps = 1e-6
-        if self.velocity.length_squared() > eps:
-            target_orientation = math.atan2(self.velocity.y, self.velocity.x)
-            self.orientation = target_orientation
-        else:
-            if steering.linear.length_squared() > eps:
-                self.orientation = math.atan2(steering.linear.y, steering.linear.x)
-
-        self.orientation %= (2 * math.pi)
+        self.acceleration = pygame.Vector2(0,0)
 
         self._limit_entity()

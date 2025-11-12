@@ -6,6 +6,7 @@ from src.entities.moving_entity import MovingEntity
 from src.states.seek import Seek
 from src.states.arrive import Arrive
 from src.states.flee  import Flee
+from src.states.wander import Wander
 
 def main():
     pygame.init()
@@ -29,12 +30,12 @@ def main():
         WIDTH // 4, 
         HEIGHT // 4, 
         world, 
-        max_speed=50,
-        max_acceleration=100,
+        max_speed=300,
+        max_acceleration=500,
     )
 
     entity_one.state_machine.change_state(Arrive(entity_one, entity_two))
-    entity_two.state_machine.change_state(Flee(entity_two, entity_one))
+    entity_two.state_machine.change_state(Wander(entity_two, MovingEntity(0, 0, world)))
 
     world.add_entity(entity_one)
     world.add_entity(entity_two)

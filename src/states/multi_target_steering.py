@@ -7,10 +7,10 @@ from src.outputs.steering_output import SteeringOutput
 
 class MultiTargetSteering (State):
 
-    def __init__(self, entity, threshold=100):
+    def __init__(self, entity, threshold=100.0):
         super().__init__(entity)
 
-        if threshold <= 0:
+        if threshold <= 0.0:
             raise ValueError('threshold deve ser maior que zero.')
 
         self.targets = self.entity.environment.entities
