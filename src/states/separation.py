@@ -15,7 +15,8 @@ class Separation (MultiTargetSteering):
         self.decay_coefficient = decay_coefficient
 
     def enter(self):
-        return super().enter()
+        print(f"[DEBUG] {self.entity.ID} -> Separation")
+        self.entity.change_color("brown")
     
     def exit(self):
         return super().exit()
