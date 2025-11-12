@@ -1,4 +1,4 @@
 class BehaviorAndWeight ():
-    def __init__(self, behavior, weight=1.0):
-        self.behavior = behavior
+    def __init__(self, state, weight=1.0):
+        self.state = state
         self.weight: float = weight
