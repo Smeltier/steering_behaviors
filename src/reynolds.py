@@ -5,7 +5,7 @@ from src.world import World
 from src.entities.moving_entity import MovingEntity
 from src.states.cohesion import Cohesion
 from src.states.separation import Separation
-from src.states.alignment import Alignment
+from src.states.velocity_match import VelocityMatch
 from src.states.wander import Wander
 from src.states.blended_steering import BlendedSteering
 from src.outputs.behavior_and_weight import BehaviorAndWeight
@@ -13,7 +13,7 @@ from src.outputs.behavior_and_weight import BehaviorAndWeight
 def main():
     pygame.init()
 
-    WIDTH, HEIGHT = 800, 800
+    WIDTH, HEIGHT = 1600, 800
     FPS = 60
 
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -45,7 +45,7 @@ def main():
 
         behaviors = [
             BehaviorAndWeight(Separation(agent),            weight=2.0),
-            BehaviorAndWeight(Alignment(agent),             weight=1.2),
+            BehaviorAndWeight(VelocityMatch(agent),             weight=1.2),
             BehaviorAndWeight(Cohesion(agent, threshold=100),              weight=1.0),
             BehaviorAndWeight(Wander(agent, wander_target), weight=0.2)
         ]
