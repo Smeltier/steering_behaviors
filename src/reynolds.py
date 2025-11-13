@@ -48,7 +48,7 @@ def main():
             BehaviorAndWeight(Separation(agent), weight=2.0),
             BehaviorAndWeight(VelocityMatch(agent), weight=1.2),
             BehaviorAndWeight(Cohesion(agent, threshold=100), weight=1.0),
-            BehaviorAndWeight(Wander(agent, wander_target), weight=0.2)
+            BehaviorAndWeight(Wander(agent, wander_target), weight=0.2),
         ]
 
         blended = BlendedSteering(agent, behaviors)
