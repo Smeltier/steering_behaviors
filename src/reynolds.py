@@ -3,12 +3,13 @@ import random
 
 from src.world import World
 from src.entities.moving_entity import MovingEntity
+from src.outputs.behavior_and_weight import BehaviorAndWeight
+
 from src.states.cohesion import Cohesion
 from src.states.separation import Separation
 from src.states.velocity_match import VelocityMatch
 from src.states.wander import Wander
 from src.states.blended_steering import BlendedSteering
-from src.outputs.behavior_and_weight import BehaviorAndWeight
 
 def main():
     pygame.init()
