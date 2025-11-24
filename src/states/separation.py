@@ -5,7 +5,7 @@ from src.outputs.steering_output import SteeringOutput
 
 class Separation (MultiTargetSteering):
 
-    def __init__(self, entity, threshold=50, decay_coefficient=100000):
+    def __init__(self, entity, threshold=50.0, decay_coefficient=100000):
         super().__init__(entity, threshold)
 
         if decay_coefficient <= 0:
@@ -18,15 +18,14 @@ class Separation (MultiTargetSteering):
         print(f"[DEBUG] {self.entity.ID} -> Separation")
         self.entity.change_color("brown")
     
-    def exit(self):
-        return super().exit()
+    def exit(self): pass
     
     def execute(self, delta_time):
         steering = self.get_steering()
         self.entity.apply_steering(steering, delta_time)
     
-    def get_steering(self):
-        steering = SteeringOutput()
+    def get_steering (self) -> SteeringOutput:
+        steering: SteeringOutput = SteeringOutput()
 
         self.targets = self.entity.environment.entities
         if len(self.targets) == 1: return steering

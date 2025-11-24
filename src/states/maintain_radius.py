@@ -17,7 +17,7 @@ class MaintainRadius (SingleTargetState):
 
     def enter(self) -> None:
         print(f"[DEBUG] {self.entity.ID} -> MaintainDistance")
-        self.entity.change_color("yellow")
+        self.entity.change_color("white")
     
     def exit(self) -> None:
         return super().exit()
