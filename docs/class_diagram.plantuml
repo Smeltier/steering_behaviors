@@ -1,0 +1,138 @@
+@startuml class_diagram
+
+class BaseGameEntity {
+    {static} - next_ID: int
+    - ID: int
+    - position: Vector2D
+    - environment: World
+
+    + BaseGameEntity (x: float, y: float, world: World)
+    {abstract} + update (delta_time: float) : None
+    + get_position () : Vector2D
+    + set_position (new_position: Vector2D) : None
+    + get_ID () : int
+    - set_ID () : int
+}
+
+class MovingEntity extends BaseGameEntity {
+    - velocity: Vector2D
+    - acceleration: Vector2D
+    - angular_acceleration: float
+    - orientation: float
+    - rotation: float
+    - mass: int
+    - max_speed: float
+    - max_acceleration: float
+    - max_rotation: float
+    - max_angular_acceleration: float
+    - color: Color
+    - state_machine: StateMachine
+
+    + MovingEntity (x: float, y: float, world: World, mass: float, max_speed: float, max_acceleration: float, max_rotation: float, max_angular_acceleration: float, color_name: str)
+    + draw (screen: Surface) : None
+    + apply_steering (steering: SteeringOutput, delta_time: float) : None
+    + change_color (color_name: str) : None
+    + change_state (new_state: State) : None
+    + get_direction () : Vector2D
+    + get_velocity () : Vector2D
+    + get_acceleration () : Vector2D
+    + get_angular_acceleration () : float
+    + get_orientation () : float
+    + get_rotation () : float
+    + get_mass () : float
+    + get_max_speed () : float
+    + get_max_acceleration () : float
+    + get_max_rotation () : float
+    + get_max_angular_acceleration () : float
+    + get_color () : Color
+    + set_velocity (value: Vector2D) : None
+    + set_acceleration (value: Vector2D) : None
+    + set_angular_acceleration (value: float) : None
+    + set_orientation (value: float) : None
+    + set_rotation (value: float) : None
+    + set_mass (value: float) : None
+    + set_max_speed (value: float) : None
+    + set_max_acceleration (value: float) : None
+    + set_max_rotation (value: float) : None
+    + set_max_angular_acceleration (value: float) : None
+    + set_color (value: str | Color) : None
+    - limit_entity () : None
+    - apply_force (force: Vector2D) : None
+}
+
+class World {
+    - domain: Surface
+    - width: int
+    - height: int
+    - entities: list[BaseGameEntity]
+
+    + World (screen: Surface)
+    + update (delta_time: float) : None
+    + add_entity (entity: BaseGameEntity) : None
+    + remove_entity (entity: BaseGameEntity) : None
+}
+
+class SteeringOutput {
+    - linear: Vector2D
+    - angular: float
+
+    + SteeringOutput ()
+    + get_linear () : Vector2D
+    + get_angular () : float
+    + set_linear (value: Vector2D) : None
+    + set_angular (value: Vector2D) : None
+}
+
+class BehaviorAndWeight {
+    - state: State
+    - weight: float
+
+    + BehaviorAndWeight (state: State, weight: float)
+    + get_state () : State
+    + get_weight () : float
+    + set_state (value: State) : None
+    + set_weight (value: float) : None
+}
+
+class Collision {
+    - position: Vector2D
+    - normal: Vector2D
+
+    + Collision ()
+    + get_position () : Vector2D
+    + get_normal () : Vector2D
+    + set_position (value: Vector2D) : None
+    + set_normal (value: Vector2D) : None
+}
+
+class StateMachine {
+    - owner: MovingEntity
+    - current_state: State
+    - previous_state: State
+
+    + StateMachine (owner: MovingEntity, start_state: State)
+    + update (delta_time: float) : None
+    + change_state (new_state: State) : None
+    + revert_to_previous_state () : None
+}
+
+class InputController {
+    - character: MovingEntity
+    - target: MovingEntity
+    - key_to_state: dict[Key, State]
+
+    + InputController (character: MovingEntity, target: MovingEntity)
+    + handle_event (event: Event) : None
+}
+
+class RadiusCalculator <<functor>> {
+    - world: World
+    - character_radius: float
+
+    + RadiusCalculator (world: World, character_radius: float)
+}
+
+class SteeringTarget {
+}
+
+@enduml
