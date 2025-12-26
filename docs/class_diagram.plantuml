@@ -1,6 +1,22 @@
 @startuml class_diagram
 
-class BaseGameEntity {
+skinparam linetype ortho
+left to right direction
+skinparam classArrowColor black
+skinparam nodesep 120
+skinparam ranksep 120
+
+skinparam ClassDiagram {
+    ArrowThickness 1
+    ArrowColor black
+    HorizontalSpacing 60
+    VerticalSpacing 60
+    ArrowFontSize 11
+    ArrowFontColor black
+    ArrowFontStyle plain
+}
+
+abstract class BaseGameEntity {
     {static} - next_ID: int
     - ID: int
     - position: Vector2D
@@ -133,6 +149,182 @@ class RadiusCalculator <<functor>> {
 }
 
 class SteeringTarget {
+    - position: Vector2D
+    - velocity: Vector2D
+    - rotation: float
+    - orientation: float
+
+    + SteeringTarget (position: Vector2D, orientation: float)
+    + get_position () : Vector2D
+    + get_velocity () : Vector2D
+    + get_rotation () : float
+    + get_orientation () : float
+    + set_position (value: Vector2D) : None
+    + set_velocity (value: Vector2D) : None
+    + set_orientation (value: float) : None
+    + set_rotation (value: float) : None
 }
+
+abstract class State {
+    - entity: MovingEntity
+
+    - State (entity: MovingEntity)
+    {abstract} + enter () : None
+    {abstract} + exit () : None
+    {abstract} + execute (delta_time: float) : None
+    {abstract} + get_steering () : SteeringOutput
+}
+
+abstract class MultiTargetState extends State {
+    - targets: list[MovingEntity]
+    - threshold: float
+
+    - MultiTargetState (entity: MovingEntity, threshold: float)
+    + get_threshold () : float
+    + set_threshold (value: float) :  None
+}
+
+abstract class SingleTargetState extends State {
+    - target: MovingEntity
+
+    - SingleTargetState (entity: MovingEntity, target: MovingEntity)
+}
+
+class Align extends SingleTargetState {
+    - slow_radius: float
+    - max_rotation: float
+    - target_radius: float
+    - time_to_target: float
+    - max_angular_acceleration: float
+
+    + Align (entity: MovingEntity, target: MovingEntity, slow_radius: float, target_radius: float, time_to_target: float, max_rotation: float, max_angular_acceleration: float)
+}
+
+class Face extends Align {
+    + Align (entity: MovingEntity, target: MovingEntity, slow_radius: float, target_radius: float, time_to_target: float, max_rotation: float, max_angular_acceleration: float)
+}
+
+class Wander extends Face {
+    - wander_rate: float
+    - wander_offset: float
+    - wander_radius: float
+    - max_acceleration: float
+    - wander_orientation: float
+
+    + Wander (entity: MovingEntity, target: MovingEntity, slow_radius: float, target_radius: float, time_to_target: float, max_rotation: float, max_angular_acceleration: float, wander_offset: float, wander_radius: float, wander_rate: float, max_acceleration: float)
+}
+
+class Arrive extends SingleTargetState {
+    - distance: float
+    - slow_radius: float
+    - direction: Vector2D
+    - target_radius: float
+    - time_to_target: float
+
+    + Arrive (entity: MovingEntity, target: MovingEntity, slow_radius: float, target_radius: float, time_to_target: float)
+}
+
+class Attraction extends MultiTargetState {
+    - max_acceleration: float
+    - decay_coefficient: float
+
+    + Attraction (entity: MovingEntity, threshold: float, decay_coefficient: float)
+}
+
+class BlendedSteering extends State {
+    - max_rotation: float
+    - max_acceleration: float
+    - behaviors: list[BehaviorAndWeight]
+
+    + BlendedSteering (entity: MovingEntity, behaviors: list[BehaviorAndWeight])
+}
+
+class Cohesion extends MultiTargetState {
+    + Cohesion (entity: MovingEntity, threshold: float)
+}
+
+class Seek extends SingleTargetState {
+    + Seek (entity: MovingEntity, target: MovingEntity)
+}
+
+class CollisionAvoidance extends Seek {
+    - collision_ray: float
+    - avoid_distance: float
+    - collision_detector: CollisionDetector
+
+    + CollisionAvoidance (entity: MovingEntity, target: MovingEntity, collision_ray: float, avoid_distance: float)
+}
+
+class Flee extends SingleTargetState {
+    + Flee (entity: MovingEntity, target: MovingEntity)
+}
+
+class Evade extends Flee {
+    - max_prediction: float
+
+    + Evade (entity: MovingEntity, target: MovingEntity, max_prediction: float)
+}
+
+class MaintainRadius extends SingleTargetState {
+    - tolerance: float
+    - max_acceleration: float
+    - radius_calculator: RadiusCalculator
+
+    + MaintainRadius (entity: MovingEntity, leader: MovingEntity, radius_calculator: RadiusCalculator)
+}
+
+class PrioritySteering extends State {
+    - groups: list[BlendedSteering]
+    - epsilon: float
+
+    + PrioritySteering (entity: MovingEntity, groups: list[BlendedSteering], epsilon: float)
+}
+
+class Pursue extends Seek {
+    - max_prediction: float
+
+    + Pursue (entity: MovingEntity, target: MovingEntity, max_prediction: float)
+}
+
+class Separation extends MultiTargetState {
+    - max_acceleration: float
+    - decay_coefficient: float
+
+    + Separation (entity: MovingEntity, threshold: float, decay_coefficient: float)
+}
+
+class VelocityMatch extends MultiTargetState {
+    - threshold: float
+    - slow_radius: float
+    - time_to_target: float
+
+    + VelocityMatch (entity: MovingEntity, threshold: float, slow_radius: float, time_to_target: float)
+}
+
+class CollisionDetector {
+    + CollisionDetector ()
+    + get_collision (position: Vector2D, vector: Vector2D) : Collision
+}
+
+MovingEntity "1 owner" *-- "1 state_machine" StateMachine
+World "1 environment" o-- "0..* entities" BaseGameEntity
+State o--> "1 entity" MovingEntity
+State ..> SteeringOutput: uses
+SingleTargetState o--> "1 target" MovingEntity
+MultiTargetState o--> "1..* targets" MovingEntity
+BlendedSteering o--> "0..1 behaviors" BehaviorAndWeight
+PrioritySteering o--> "0..1 groups" BlendedSteering
+InputController o--> "1 entity" MovingEntity
+InputController o--> "1 target" MovingEntity
+CollisionAvoidance *--> "1 collision_detector" CollisionDetector
+StateMachine o--> "1 current_state" State
+StateMachine o--> "1 previous_state" State
+MaintainRadius o--> "1 radius_calculator" RadiusCalculator
+BehaviorAndWeight o--> "1 state" State
+CollisionDetector ..> Collision: returns
+CollisionAvoidance ..> Collision: uses
+MultiTargetState ..> World: uses
+InputController ..> State: uses
+State ..> SteeringTarget: uses
 
 @enduml
