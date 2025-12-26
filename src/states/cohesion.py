@@ -1,41 +1,42 @@
 import pygame
 
-from src.states.multi_target_steering import MultiTargetSteering
+from src.entities.moving_entity import MovingEntity
 from src.outputs.steering_output import SteeringOutput
+from src.states.multi_target_steering import MultiTargetState
 
-class Cohesion (MultiTargetSteering):
+class Cohesion(MultiTargetState):
 
-    def __init__(self, entity, threshold=50):
+    def __init__(self, entity: MovingEntity, threshold: float = 50.0):
         super().__init__(entity, threshold)
 
     def enter(self):
-        return super().enter()
+        pass
     
     def exit(self):
-        return super().exit()
+        pass
     
     def execute(self, delta_time):
         steering = self.get_steering()
-        self.entity.apply_steering(steering, delta_time)
+        self._entity.apply_steering(steering, delta_time)
     
     def get_steering(self):
         steering = SteeringOutput()
 
-        self.targets = self.entity.environment.entities
-        if len(self.targets) == 1: return steering
+        self._targets = self._entity._environment._entities
+        if len(self._targets) == 1: return steering
 
         try:
             sum_positions = pygame.Vector2()
             count = 0
 
-            for target in self.targets:
+            for target in self._targets:
 
-                if target == self.entity:
+                if target == self._entity:
                     continue
 
-                distance = (target.position - self.entity.position).length()
+                distance = (target.position - self._entity.position).length()
 
-                if distance > self.threshold:
+                if distance > self._threshold:
                     continue
 
                 sum_positions += target.position
@@ -44,11 +45,11 @@ class Cohesion (MultiTargetSteering):
             if count == 0: return steering
 
             center_of_mass = sum_positions / count
-            desired_direction = center_of_mass - self.entity.position
+            desired_direction = center_of_mass - self._entity.position
 
             if desired_direction.length_squared() > 0:
                 desired_direction.normalize_ip()
-                desired_direction *= self.entity.max_acceleration
+                desired_direction *= self._entity.max_acceleration
 
             steering.linear = desired_direction
             steering.angular = 0

@@ -1,12 +1,20 @@
 import math
+
 import pygame
 
-from src.states.single_target_state import SingleTargetState
+from src.entities.moving_entity import MovingEntity
 from src.outputs.steering_output import SteeringOutput
+from src.states.single_target_state import SingleTargetState
 
-class Align (SingleTargetState):
+class Align(SingleTargetState):
 
-    def __init__(self, entity, target, slow_radius, target_radius, time_to_target, max_rotation, max_angular_acceleration):
+    _slow_radius: float
+    _max_rotation: float
+    _target_radius: float
+    _time_to_target: float
+    _max_angular_acceleration: float
+
+    def __init__(self, entity: MovingEntity, target: MovingEntity, slow_radius: float, target_radius: float, time_to_target: float, max_rotation: float, max_angular_acceleration: float):
         super().__init__(entity, target)
 
         if time_to_target <= 0:
@@ -21,43 +29,43 @@ class Align (SingleTargetState):
         self.max_angular_acceleration = max_angular_acceleration
 
     def enter(self) -> None:
-        print(f"[DEBUG] {self.entity.ID} -> Align")
-        self.entity.change_color("white")
+        print(f"[DEBUG] {self._entity.ID} -> Align")
+        self._entity.change_color("white")
 
     def exit(self) -> None:
-        return super().exit()
+        pass
     
-    def execute(self, delta_time) -> None:
+    def execute(self, delta_time: float) -> None:
         steering = self.get_steering()
-        self.entity.apply_steering(steering, delta_time)
+        self._entity.apply_steering(steering, delta_time)
 
     def get_steering(self) -> SteeringOutput:
         steering = SteeringOutput()
 
-        if not self.target: return steering
+        if not self._target: return steering
 
         try:
-            rotation = self.target.orientation - self.entity.orientation
+            rotation = self._target.orientation - self._entity.orientation
             rotation = map_to_range(rotation)
             rotation_size = abs(rotation)
 
-            if rotation_size < self.target_radius:
+            if rotation_size < self._target_radius:
                 return SteeringOutput()
             
-            if rotation_size > self.slow_radius:
-                target_rotation = self.max_rotation
+            if rotation_size > self._slow_radius:
+                target_rotation = self._max_rotation
             else:
-                target_rotation = self.max_rotation * rotation_size / self.slow_radius
+                target_rotation = self._max_rotation * rotation_size / self._slow_radius
 
             target_rotation *= rotation / rotation_size
 
-            steering.angular = target_rotation - self.entity.rotation
-            steering.angular /= self.time_to_target
+            steering.angular = target_rotation - self._entity.rotation
+            steering.angular /= self._time_to_target
 
             angular_acceleration = abs(steering.angular)
-            if angular_acceleration > self.max_angular_acceleration:
+            if angular_acceleration > self._max_angular_acceleration:
                 steering.angular /= angular_acceleration
-                steering.angular *= self.max_angular_acceleration
+                steering.angular *= self._max_angular_acceleration
 
             steering.linear = pygame.math.Vector2(0,0)
             return steering

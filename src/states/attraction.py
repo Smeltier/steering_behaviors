@@ -1,55 +1,59 @@
 import pygame
 
-from src.states.multi_target_steering import MultiTargetSteering
+from src.entities.moving_entity import MovingEntity
 from src.outputs.steering_output import SteeringOutput
+from src.states.multi_target_steering import MultiTargetState
 
-class Attraction (MultiTargetSteering):
+class Attraction(MultiTargetState):
 
-    def __init__(self, entity, threshold=50, decay_coefficient=100000):
+    _max_acceleration: float
+    _decay_coefficient: float
+
+    def __init__(self, entity: MovingEntity, threshold: float = 50.0, decay_coefficient: float = 100000.0):
         super().__init__(entity, threshold)
 
         if decay_coefficient <= 0:
             raise ValueError('decay_coefficient deve ser maior que zero.')
         
-        self.max_acceleration = entity.max_acceleration
-        self.decay_coefficient = decay_coefficient
+        self._max_acceleration = entity.max_acceleration
+        self._decay_coefficient = decay_coefficient
 
     def enter(self):
-        print(f"[DEBUG] {self.entity.ID} -> Attraction")
-        self.entity.change_color("brown")
+        print(f"[DEBUG] {self._entity.ID} -> Attraction")
+        self._entity.change_color("brown")
     
     def exit(self):
         return super().exit()
     
     def execute(self, delta_time):
         steering = self.get_steering()
-        self.entity.apply_steering(steering, delta_time)
+        self._entity.apply_steering(steering, delta_time)
     
     def get_steering(self):
         steering = SteeringOutput()
 
-        self.targets = self.entity.environment.entities
-        if len(self.targets) == 1: return steering
+        self.targets = self._entity._environment._entities
+        if len(self._targets) == 1: return steering
 
         try:
-            for target in self.targets:
+            for target in self._targets:
 
-                if target == self.entity: 
+                if target == self._entity: 
                     continue
 
-                direction = target.position - self.entity.position
+                direction = target.position - self._entity.position
                 distance = direction.length()
 
-                if distance == 0 or distance >= self.threshold:
+                if distance == 0 or distance >= self._threshold:
                     continue
 
-                strength = min(self.decay_coefficient / (distance * distance), self.max_acceleration)
+                strength = min(self._decay_coefficient / (distance * distance), self._max_acceleration)
 
                 direction.normalize_ip()
                 steering.linear += strength * direction
 
-            if steering.linear.length_squared() > self.max_acceleration ** 2:
-                steering.linear.scale_to_length(self.max_acceleration)
+            if steering._linear.length_squared() > self._max_acceleration ** 2:
+                steering._linear.scale_to_length(self._max_acceleration)
 
             steering.angular = 0.0
             return steering

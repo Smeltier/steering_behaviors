@@ -1,32 +1,18 @@
-import pygame
-
 from abc import abstractmethod
 
+import pygame
+
 from src.states.state import State
-from src.outputs.steering_output import SteeringOutput
+from src.entities.moving_entity import MovingEntity
 
-class SingleTargetState (State):
+class SingleTargetState(State):
 
-    def __init__(self, entity, target):
+    _target: MovingEntity
+
+    def __init__(self, entity: MovingEntity, target: MovingEntity):
         super().__init__(entity)
 
         if not target:
             raise ValueError('O alvo (target) não pode ser None.')
         
-        self.target = target
-
-    @abstractmethod
-    def enter(self) -> None: 
-        pass
-
-    @abstractmethod
-    def exit(self) -> None: 
-        pass
-
-    @abstractmethod
-    def execute(self, delta_time) -> None: 
-        pass
-
-    @abstractmethod
-    def get_steering(self) -> SteeringOutput:
-        pass
+        self._target = target

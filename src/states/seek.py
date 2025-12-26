@@ -1,11 +1,12 @@
 import pygame
 
+from src.entities.moving_entity import MovingEntity
 from src.outputs.steering_output import SteeringOutput
 from src.states.single_target_state import SingleTargetState
 
 class Seek (SingleTargetState):
 
-    def __init__(self, entity, target):
+    def __init__(self, entity: MovingEntity, target: MovingEntity):
         super().__init__(entity, target)
         
         if not target:
@@ -18,23 +19,23 @@ class Seek (SingleTargetState):
     def exit(self) -> None:
         return super().exit()
     
-    def execute(self, delta_time) -> None:
+    def execute(self, delta_time: float) -> None:
         steering = self.get_steering()
         self.entity.apply_steering(steering, delta_time)
     
     def get_steering(self) -> SteeringOutput:
         steering = SteeringOutput()
 
-        if not self.target: return steering
+        if not self._target: return steering
         
         try:
-            desired_velocity = self.target.position - self.entity.position
+            desired_velocity = self._target.position - self._entity.position
 
             if desired_velocity.length_squared() == 0:
                 return steering
             
             desired_velocity.normalize_ip()
-            desired_velocity *= self.entity.max_acceleration
+            desired_velocity *= self._entity.max_acceleration
 
             steering.linear  = desired_velocity
             steering.angular = 0.0

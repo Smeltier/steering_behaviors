@@ -1,42 +1,44 @@
 import math
+
 import pygame
 
 from src.states.align import Align
-from src.outputs.steering_output import SteeringOutput
+from src.entities.moving_entity import MovingEntity
 from src.extra.steering_target import SteeringTarget
+from src.outputs.steering_output import SteeringOutput
 
 class Face (Align):
 
-    def __init__(self, entity, target, slow_radius=50.0, target_radius=2.0, time_to_target=0.001, max_rotation=50.0, max_angular_acceleration=1000.0):
+    def __init__(self, entity: MovingEntity, target: MovingEntity, slow_radius: float = 50.0, target_radius: float = 2.0, time_to_target: float = 0.001, max_rotation: float = 50.0, max_angular_acceleration: float = 1000.0):
         super().__init__(entity, target, slow_radius, target_radius, time_to_target, max_rotation, max_angular_acceleration)
 
     def enter(self):
-        print(f"[DEBUG] {self.entity.ID} -> Face")
-        self.entity.change_color("white")
+        print(f"[DEBUG] {self._entity.ID} -> Face")
+        self._entity.change_color("white")
 
     def exit(self) -> None:
         return super().exit()    
 
-    def execute(self, delta_time) -> None:
+    def execute(self, delta_time: float) -> None:
         steering = self.get_steering()
-        self.entity.apply_steering(steering, delta_time)
+        self._entity.apply_steering(steering, delta_time)
     
     def get_steering(self) -> SteeringOutput:
         try:
-            direction = self.target.position - self.entity.position
+            direction = self._target.position - self._entity.position
 
             if direction.length() == 0: return SteeringOutput()
             
-            old_target = self.target
+            old_target = self._target
 
             temporary_target = SteeringTarget(
-                position    = self.target.position,
+                position    = self._target.position,
                 orientation = math.atan2(-direction.x, direction.y)
             )
 
-            self.target = temporary_target
+            self._target = temporary_target
             steering = super().get_steering()
-            self.target = old_target
+            self._target = old_target
 
             return steering
 

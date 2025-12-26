@@ -1,35 +1,41 @@
-from abc import ABC as AbstractClass, abstractmethod
+from abc import ABC, abstractmethod
 
 from src.entities.moving_entity import MovingEntity
 from src.outputs.steering_output import SteeringOutput
 
-class State (AbstractClass):
+class State(ABC):
     """
     Classe base abstrata para todos os estados em um sistema de Máquina de Estado Finito (FSM).
     """
 
-    def __init__ (self, entity: MovingEntity) -> None:
+    _entity: MovingEntity
+
+    def __init__(self, entity: MovingEntity) -> None:
         if not entity:
             raise ValueError('A entidade (entity) não pode ser None.')
         
-        self.entity = entity
+        self._entity = entity
 
     @abstractmethod
-    def enter (self) -> None:
+    def enter(self) -> None:
         """ Executa a lógica de entrada do estado. """
-        raise NotImplementedError('A subclasse deve implementar o método enter.')
+        pass
 
     @abstractmethod
-    def exit (self) -> None:
+    def exit(self) -> None:
         """ Executa a lógica de saída do estado. """
-        raise NotImplementedError('A subclasse deve implementar o método exit.')
+        pass
     
     @abstractmethod
-    def execute (self, delta_time) -> None:
+    def execute(self, delta_time: float) -> None:
         """ Executa a lógica principal de atualização do estado. """
-        raise NotImplementedError('A subclasse deve implementar o método execute.')
+        pass
     
     @abstractmethod
-    def get_steering (self) -> SteeringOutput:
+    def get_steering(self) -> SteeringOutput:
         """ Calcula e retorna a força de direção (steering) do agente. """
-        raise NotImplementedError('A subclasse deve implementar o método get_steering.')
+        pass
+
+    @property
+    def entity(self) -> MovingEntity:
+        return self._entity

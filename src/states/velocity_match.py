@@ -1,45 +1,50 @@
 import math
 import pygame
 
-from src.states.multi_target_steering import MultiTargetSteering
+from src.entities.moving_entity import MovingEntity
 from src.outputs.steering_output import SteeringOutput
+from src.states.multi_target_steering import MultiTargetState
 
-class VelocityMatch (MultiTargetSteering):
+class VelocityMatch(MultiTargetState):
 
-    def __init__(self, entity, threshold=10, slow_radius=0.25, time_to_target=0.1):
+    _threshold: float
+    _slow_radius: float
+    _time_to_target: float
+
+    def __init__(self, entity: MovingEntity, threshold: float = 10.0, slow_radius: float = 0.25, time_to_target: float = 0.1):
         super().__init__(entity, threshold)
         
-        self.threshold = threshold  
-        self.slow_radius = slow_radius  
-        self.time_to_target = time_to_target  
+        self._threshold = threshold  
+        self._slow_radius = slow_radius  
+        self._time_to_target = time_to_target  
 
     def enter(self) -> None:
-        print(f"[DEBUG] {self.entity.ID} -> Alignment")
-        self.entity.change_color("white")
+        print(f"[DEBUG] {self._entity.ID} -> Alignment")
+        self._entity.change_color("white")
 
     def exit(self) -> None:
         return super().exit()
 
     def execute(self, delta_time) -> None:
         steering = self.get_steering()
-        self.entity.apply_steering(steering, delta_time)
+        self._entity.apply_steering(steering, delta_time)
 
     def get_steering(self) -> SteeringOutput:
         steering = SteeringOutput()
         
-        if not self.targets: 
+        if not self._targets: 
             return steering
 
         sum_velocity = pygame.Vector2()
         count = 0
 
-        for target in self.targets:
-            if target == self.entity:
+        for target in self._targets:
+            if target == self._entity:
                 continue
 
-            distance = (target.position - self.entity.position).length()
+            distance = (target.position - self._entity.position).length()
 
-            if distance > self.threshold:
+            if distance > self._threshold:
                 continue
 
             sum_velocity += target.velocity
@@ -54,14 +59,14 @@ class VelocityMatch (MultiTargetSteering):
             return steering
 
         try:
-            desired_velocity = average_velocity.normalize() * self.entity.max_speed
+            desired_velocity = average_velocity.normalize() * self._entity.max_speed
         except ValueError:
              return steering
 
-        steering.linear = desired_velocity - self.entity.velocity
+        steering.linear = desired_velocity - self._entity.velocity
         
-        if steering.linear.magnitude() > self.entity.max_acceleration:
-             steering.linear = steering.linear.normalize() * self.entity.max_acceleration
+        if steering.linear.magnitude() > self._entity.max_acceleration:
+             steering.linear = steering.linear.normalize() * self._entity.max_acceleration
 
         return steering
 

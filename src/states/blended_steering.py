@@ -1,45 +1,50 @@
 import pygame
 
 from src.states.state import State
+from src.entities.moving_entity import MovingEntity
 from src.outputs.steering_output import SteeringOutput
 from src.outputs.behavior_and_weight import BehaviorAndWeight
 
-class BlendedSteering (State):
+class BlendedSteering(State):
 
-    def __init__(self, entity, behaviors: list[BehaviorAndWeight]):
+    _max_rotation: float
+    _max_acceleration: float
+    _behaviors: list[BehaviorAndWeight]
+
+    def __init__(self, entity: MovingEntity, behaviors: list[BehaviorAndWeight]):
         super().__init__(entity)
 
         if len(behaviors) <= 0: 
             raise ValueError('behaviors deve ter pelo menos um estado.')
 
-        self.behaviors = behaviors
-        self.max_acceleration = entity.max_acceleration
-        self.max_rotation = entity.max_rotation
+        self._behaviors = behaviors
+        self._max_acceleration = entity.max_acceleration
+        self._max_rotation = entity.max_rotation
 
     def enter(self):
-        print(f"[DEBUG] {self.entity.ID} -> BlendedSteering")
-        self.entity.change_color("white")
+        print(f"[DEBUG] {self._entity.ID} -> BlendedSteering")
+        self._entity.change_color("white")
     
     def exit(self):
-        return super().exit()
+        pass
     
     def execute(self, delta_time):
         steering = self.get_steering()
-        self.entity.apply_steering(steering, delta_time)
+        self._entity.apply_steering(steering, delta_time)
     
     def get_steering(self):
         steering = SteeringOutput()
 
         try:
-            for behavior in self.behaviors:
-                behavior_steering = behavior.state.get_steering()
+            for behavior in self._behaviors:
+                behavior_steering = behavior._state.get_steering()
                 steering.linear += (behavior_steering.linear * behavior.weight)
                 steering.angular += (behavior_steering.angular * behavior.weight)
 
-            if steering.linear.length() > self.max_acceleration:
-                steering.linear.scale_to_length(self.max_acceleration)
+            if steering.linear.length() > self._max_acceleration:
+                steering.linear.scale_to_length(self._max_acceleration)
 
-            steering.angular = max(min(steering.angular, self.max_rotation), -self.max_rotation)
+            steering.angular = max(min(steering.angular, self._max_rotation), -self._max_rotation)
 
             return steering
 
