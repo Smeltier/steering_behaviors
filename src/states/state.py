@@ -6,9 +6,6 @@ from src.outputs.steering_output import SteeringOutput
 class State (AbstractClass):
     """
     Classe base abstrata para todos os estados em um sistema de Máquina de Estado Finito (FSM).
-
-    Define a interface (o 'contrato') que todas as subclasses de estado devem implementar
-    para gerenciar o comportamento de uma entidade no jogo.
     """
 
     def __init__ (self, entity: MovingEntity) -> None:

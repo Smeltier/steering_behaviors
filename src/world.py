@@ -1,28 +1,45 @@
 import pygame
 
-class World ():
+from src.entities.base_game_entity import BaseGameEntity
 
-    def __init__(self, screen):
-        self.domain   = screen
-        self.width    = screen.get_width()
-        self.height   = screen.get_height()
-        self.entities = []
+class World:
 
-    def add_entity(self, entity) -> None:
+    _domain: pygame.Surface
+    _width: int
+    _height: int
+    _entities: list[BaseGameEntity]
+
+    def __init__(self, screen: pygame.Surface) -> None:
+        self._domain = screen
+        self._width = screen.get_width()
+        self._height = screen.get_height()
+        self._entities = []
+
+    def add_entity(self, entity: BaseGameEntity) -> None:
         """ Adiciona uma nova entidade ao mundo. Lança uma Exceção caso a entidade seja do tipo None. """
 
         if entity is None: 
             raise RuntimeError("Sua nova entidade não pode ser nula.")
 
-        self.entities.append(entity)
+        self._entities.append(entity)
 
-    def remove_entity(self, entity) -> None:
+    def remove_entity(self, entity: BaseGameEntity) -> None:
         """ Remove uma entidade do mundo. """
-        self.entities = [e for e in self.entities if e != entity]
+        self._entities = [e for e in self._entities if e != entity]
 
     def update(self, delta_time: float) -> None:
         """ Atualiza o mundo baseado-se no tempo. """
 
-        for entity in self.entities:
+        for entity in self._entities:
             entity.update(delta_time)
-            entity.draw(self.domain)
+            entity.draw(self._domain)
+
+    @property
+    def screen(self) -> pygame.Surface:
+        return self._domain
+    
+    @screen.setter
+    def screen(self, new_screen: pygame.Surface) -> None:
+        self._domain = new_screen
+        self._width = new_screen.get_width()
+        self._height = new_screen.get_height()

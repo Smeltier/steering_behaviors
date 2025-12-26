@@ -22,16 +22,16 @@ class StateMachine ():
             print(f"[ERROR] Falha no {self.current_state}.execute(): {e}")
             self.current_state = None
     
-    def change_state(self, state):
+    def change_state(self, new_state):
         """ Troca o estado atual. """
 
-        if not state: return
+        if not new_state: return
 
         if self.current_state:
             self.current_state.exit()
         
         self.previous_state = self.current_state
-        self.current_state = state
+        self.current_state = new_state
         
         try:
             self.current_state.enter()
