@@ -307,24 +307,36 @@ class CollisionDetector {
 }
 
 MovingEntity "1 owner" *-- "1 state_machine" StateMachine
+
 World "1 environment" o-- "0..* entities" BaseGameEntity
+
 State o--> "1 entity" MovingEntity
 State ..> SteeringOutput: uses
+State ..> SteeringTarget: uses
+
 SingleTargetState o--> "1 target" MovingEntity
+
 MultiTargetState o--> "1..* targets" MovingEntity
+MultiTargetState ..> World: uses
+
 BlendedSteering o--> "0..1 behaviors" BehaviorAndWeight
+
 PrioritySteering o--> "0..1 groups" BlendedSteering
+
 InputController o--> "1 entity" MovingEntity
 InputController o--> "1 target" MovingEntity
+InputController ..> State: uses
+
 CollisionAvoidance *--> "1 collision_detector" CollisionDetector
+CollisionAvoidance ..> Collision: uses
+
 StateMachine o--> "1 current_state" State
 StateMachine o--> "1 previous_state" State
+
 MaintainRadius o--> "1 radius_calculator" RadiusCalculator
+
 BehaviorAndWeight o--> "1 state" State
+
 CollisionDetector ..> Collision: returns
-CollisionAvoidance ..> Collision: uses
-MultiTargetState ..> World: uses
-InputController ..> State: uses
-State ..> SteeringTarget: uses
 
 @enduml
