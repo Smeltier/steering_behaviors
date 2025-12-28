@@ -1,12 +1,15 @@
 import math
+from typing import TYPE_CHECKING
 
 import pygame
 
-from src.world import World
-from src.states.state import State
 from src.machines.state_machine import StateMachine
 from src.outputs.steering_output import SteeringOutput
 from src.entities.base_game_entity import BaseGameEntity
+
+if TYPE_CHECKING:
+    from src.world import World
+    from src.states.state import State
 
 class MovingEntity(BaseGameEntity):
 
@@ -23,21 +26,23 @@ class MovingEntity(BaseGameEntity):
     _color: pygame.Color
     _state_machine: StateMachine
 
-    def __init__(self, x: float, y: float, world: World, mass=1.0, max_speed=1.0, max_acceleration=1.0, max_rotation=math.pi, max_angular_acceleration=math.pi/4, color_name="white"):
+    def __init__(self, x: float, y: float, world: 'World', mass=1.0, max_speed=1.0, max_acceleration=1.0, max_rotation=math.pi, max_angular_acceleration=math.pi/4, color_name="white"):
         super().__init__(x, y, world)
 
-        self._velocity = pygame.Vector2()
-        self._acceleration = pygame.Vector2()
-        self._angular_acceleration = 0
-        self._orientation = 0.0
-        self._rotation = 0.0
         self._mass = mass
         self._max_speed = max_speed
         self._max_acceleration = max_acceleration
         self._max_rotation = max_rotation
         self._max_angular_acceleration = max_angular_acceleration
+        
+        self._velocity = pygame.Vector2()
+        self._acceleration = pygame.Vector2()
         self._color = pygame.Color(color_name)
         self._state_machine = StateMachine(self, None)
+        
+        self._angular_acceleration = 0
+        self._orientation = 0.0
+        self._rotation = 0.0
 
     def update(self, delta_time: float) -> None:
         if self._state_machine:
@@ -81,7 +86,7 @@ class MovingEntity(BaseGameEntity):
         """ Troca a cor da entidade. """
         self.color = pygame.Color(color_name)
 
-    def change_state(self, new_state: State) -> None:
+    def change_state(self, new_state: 'State') -> None:
         self._state_machine.change_state(new_state)
 
     def get_direction(self) -> pygame.Vector2:
