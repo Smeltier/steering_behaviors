@@ -33,15 +33,15 @@ def main():
         x = random.randint(1, WIDTH - 1)
         y = random.randint(1, HEIGHT - 1)
 
-        entity = MovingEntity(x, y, world, color="cyan", mass=1, max_speed=300, max_acceleration=300)
+        entity = MovingEntity(x = x, y = y, world = world, color = "cyan", mass = 1, max_speed = 300, max_acceleration = 300)
 
         states = [
-            BehaviorAndWeight(SwarmState(entity, ellipse, k1=500, k2=5), 5),
-            BehaviorAndWeight(Separation(entity), 2),
-            BehaviorAndWeight(Seek(entity, mouse_entity), 1)
+            BehaviorAndWeight(state = SwarmState(entity, ellipse, k1=500, k2=5), weight = 5),
+            BehaviorAndWeight(state = Seek(entity, mouse_entity), weight = 1),
+            BehaviorAndWeight(state = Separation(entity), weight = 2),
         ]
 
-        entity.state_machine.change_state(BlendedSteering(entity, states))
+        entity.change_state(BlendedSteering(entity, states))
         world.add_entity(entity)
 
     running = True
