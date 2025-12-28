@@ -1,17 +1,19 @@
+from abc import abstractmethod
+from typing import TYPE_CHECKING
+
 import pygame
 
-from abc import abstractmethod
-
-from src.world import World
+if TYPE_CHECKING:
+    from src.world import World
 
 class BaseGameEntity:
 
-    _environment: World
+    _environment: 'World'
     _position: pygame.Vector2
     _ID: int
     _next_ID: int = 1000
 
-    def __init__(self, x: float, y: float, world: World) -> None:
+    def __init__(self, x: float, y: float, world: 'World') -> None:
         self._position = pygame.Vector2((x, y))
         self._environment = world
         self._ID = self._set_ID()
@@ -33,3 +35,7 @@ class BaseGameEntity:
         entity_ID = BaseGameEntity._next_ID
         BaseGameEntity._next_ID += 1
         return entity_ID
+    
+    @property
+    def ID(self) -> int:
+        return self._ID
