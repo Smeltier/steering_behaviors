@@ -16,8 +16,7 @@ class Wander(Face):
     _wander_orientation: float
 
     def __init__(self, entity, target, slow_radius=50, target_radius=2, time_to_target=0.001, max_rotation=50, max_angular_acceleration=1000, wander_offset=20, wander_radius=50, wander_rate=1.0, max_acceleration=100):
-        super().__init__(entity, target, slow_radius, target_radius, 
-                         time_to_target, max_rotation, max_angular_acceleration)
+        super().__init__(entity, target, slow_radius, target_radius, time_to_target, max_rotation, max_angular_acceleration)
 
         self._wander_orientation = 0.0
         self._wander_rate = wander_rate
