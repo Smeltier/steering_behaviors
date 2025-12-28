@@ -22,11 +22,11 @@ class Align(SingleTargetState):
         if slow_radius < target_radius:
             raise ValueError("slow_radius não pode ser menor que target_radius.")
         
-        self.slow_radius = slow_radius
-        self.target_radius = target_radius
-        self.time_to_target = time_to_target
-        self.max_rotation = max_rotation
-        self.max_angular_acceleration = max_angular_acceleration
+        self._slow_radius = slow_radius
+        self._target_radius = target_radius
+        self._time_to_target = time_to_target
+        self._max_rotation = max_rotation
+        self._max_angular_acceleration = max_angular_acceleration
 
     def enter(self) -> None:
         print(f"[DEBUG] {self._entity.ID} -> Align")
