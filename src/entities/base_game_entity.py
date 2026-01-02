@@ -39,3 +39,7 @@ class BaseGameEntity:
     @property
     def ID(self) -> int:
         return self._ID
+    
+    @property
+    def environment(self) -> 'World':
+        return self._environment

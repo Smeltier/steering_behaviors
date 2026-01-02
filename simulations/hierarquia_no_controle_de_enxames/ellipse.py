@@ -3,18 +3,23 @@ import pygame
 class Ellipse:
 
     _position: pygame.Vector2
+    _velocity: pygame.Vector2
     _rotation: float
     _a: float
     _b: float
 
     def __init__(self, x: float, y: float, a: float, b: float, rotation: float = 0, color: str = "white") -> None:
         self._position = pygame.Vector2((x, y))
+        self._velocity = pygame.Vector2((0, 0))
         self._rotation = rotation
         self._a = a
         self._b = b
         self._color = color
 
     def update(self, delta_time: float, dx: float = 0.0, dy: float = 0.0, dtheta: float = 0) -> None:
+        if delta_time > 0:
+            self._velocity = pygame.Vector2(dx / delta_time, dy / delta_time)
+
         self._position.x += dx * delta_time
         self._position.y += dy * delta_time
         self._rotation += dtheta
@@ -40,6 +45,10 @@ class Ellipse:
 
     @property
     def position(self): return self._position
+
+    @property
+    def velocity(self):
+        return self._velocity
 
     @property
     def rotation(self): return self._rotation

@@ -16,7 +16,7 @@ class MultiTargetState(State):
         if threshold <= 0.0:
             raise ValueError('threshold deve ser maior que zero.')
 
-        self._targets = self.entity.environment.entities
+        self._targets = self._entity._environment._entities
         self._threshold = threshold
 
     @property

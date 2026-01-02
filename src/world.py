@@ -49,6 +49,10 @@ class World:
     def screen(self) -> pygame.Surface:
         return self._screen
     
+    @property
+    def entities(self) -> list['BaseGameEntity']:
+        return self._entities
+    
     @screen.setter
     def screen(self, new_screen: pygame.Surface) -> None:
         self._screen = new_screen

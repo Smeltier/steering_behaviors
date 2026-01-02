@@ -2,90 +2,81 @@ import random
 
 import pygame
 
-from src.world import World
-from src.states.seek import Seek
-from src.states.separation import Separation
-from src.entities.moving_entity import MovingEntity
-from src.states.blended_steering import BlendedSteering
-from src.outputs.behavior_and_weight import BehaviorAndWeight
-from simulations.hierarquia_no_controle_de_enxames.ellipse import Ellipse
 from simulations.hierarquia_no_controle_de_enxames.swarm_state import SwarmState
+from simulations.hierarquia_no_controle_de_enxames.ellipse import Ellipse
+from src.outputs.behavior_and_weight import BehaviorAndWeight
+from src.states.blended_steering import BlendedSteering
+from src.entities.moving_entity import MovingEntity
+from src.states.separation import Separation
+from src.world import World
 
-FPS = 60
-DEFAULT_CHARACTER_RADIUS = 33.0
-WIDTH, HEIGHT = 1600, 800
+WIDTH, HEIGHT = 800, 800
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 CLOCK = pygame.time.Clock()
+ROTATION_SPEED = 50.0
+NUM_ENTITIES = 20
+FPS = 60
 
-ENTITIES_NUMBER = 20
-ROTATION_SPEED = 90.0
-SCALE_SPEED = 50.0
+def create_entity(world: World, ellipse: Ellipse) -> None:
+    x = random.randint(1, WIDTH - 1)
+    y = random.randint(1, HEIGHT - 1)
+
+    entity = MovingEntity(x, y, world, 1, 150, 50)
+
+    states = [
+        BehaviorAndWeight(state = SwarmState(entity = entity, ellipse = ellipse, k1 = 5000, k2 = 10, gamma = 0.001), weight = 2),
+        BehaviorAndWeight(state = Separation(entity = entity), weight = 5),
+    ]
+
+    entity.change_state(BlendedSteering(entity = entity, behaviors = states))
+    world.add_entity(entity)
 
 def main():
     pygame.init()
 
-    world = World(SCREEN)
-    ellipse = Ellipse(400, 300, 150, 80, rotation=0)
-    mouse_entity = MovingEntity(x = 0, y = 0, world = world, color='blue')
+    world = World(screen = SCREEN)
+    ellipse = Ellipse(WIDTH // 2, HEIGHT // 2, 500, 800, color = 'yellow')
 
-    world.add_entity(mouse_entity)
-    for _ in range(ENTITIES_NUMBER):
-        x = random.randint(1, WIDTH - 1)
-        y = random.randint(1, HEIGHT - 1)
-
-        entity = MovingEntity(x = x, y = y, world = world, color = "cyan", mass = 1, max_speed = 300, max_acceleration = 300)
-
-        states = [
-            BehaviorAndWeight(state = SwarmState(entity, ellipse, k1=500, k2=5), weight = 5),
-            BehaviorAndWeight(state = Seek(entity, mouse_entity), weight = 1),
-            BehaviorAndWeight(state = Separation(entity), weight = 2),
-        ]
-
-        entity.change_state(BlendedSteering(entity, states))
-        world.add_entity(entity)
+    for _ in range(NUM_ENTITIES):
+        create_entity(world = world, ellipse = ellipse)
 
     running = True
     while running:
-        SCREEN.fill("black")
+        SCREEN.fill('black')
+
         delta_time = CLOCK.tick(FPS) / 1000.0
+        ellipse.update(delta_time)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
-        mx, my = pygame.mouse.get_pos()
-        dx = (mx - ellipse.position.x)
-        dy = (my - ellipse.position.y)
         keys = pygame.key.get_pressed()
 
-        dtheta = 0
-        if keys[pygame.K_q]:
-            dtheta = -ROTATION_SPEED * delta_time
-        if keys[pygame.K_e]:
-            dtheta = ROTATION_SPEED * delta_time
-
-        if keys[pygame.K_LEFT]:
-            ellipse._a -= SCALE_SPEED * delta_time
-        if keys[pygame.K_RIGHT]:
-            ellipse._a += SCALE_SPEED * delta_time
         if keys[pygame.K_UP]:
-            ellipse._b += SCALE_SPEED * delta_time
+            ellipse._a += ROTATION_SPEED * delta_time
+        if keys[pygame.K_RIGHT]:
+            ellipse._b += ROTATION_SPEED * delta_time
         if keys[pygame.K_DOWN]:
-            ellipse._b -= SCALE_SPEED * delta_time
+            ellipse._a -= ROTATION_SPEED * delta_time
+        if keys[pygame.K_LEFT]:
+            ellipse._b -= ROTATION_SPEED * delta_time
+        if keys[pygame.K_q]:
+            ellipse._rotation -= ROTATION_SPEED * delta_time
+        if keys[pygame.K_e]:
+            ellipse._rotation += ROTATION_SPEED * delta_time
 
-        ellipse._a = max(10, ellipse._a)
-        ellipse._b = max(10, ellipse._b)
+        mouse_position = pygame.Vector2(pygame.mouse.get_pos())
 
-        ellipse.update(delta_time, dx, dy, dtheta)
+        dx = mouse_position.x - ellipse.position.x
+        dy = mouse_position.y - ellipse.position.y
 
-        mouse_entity.position = pygame.Vector2((mx, my))
+        ellipse.update(delta_time, dx, dy)
+
         ellipse.draw(SCREEN)
-
         world.update(delta_time)
         pygame.display.flip()
 
     pygame.quit()
 
-
-if __name__ == "__main__":
-    main()
+main()
