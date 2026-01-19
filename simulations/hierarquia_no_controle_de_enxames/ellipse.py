@@ -1,3 +1,5 @@
+import math
+
 import pygame
 
 class Ellipse:

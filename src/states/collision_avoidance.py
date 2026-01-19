@@ -12,26 +12,21 @@ class CollisionAvoidance(Seek):
     _avoid_distance: float
     _collision_detector: CollisionDetector
 
-    def __init__ (self, entity: MovingEntity, target: MovingEntity, collision_ray: float, avoid_distance: float):
+    def __init__(self, entity: MovingEntity, target: MovingEntity, collision_detector: CollisionDetector, collision_ray: float, avoid_distance: float):
         super().__init__(entity, target)
 
-        self._collision_detector = CollisionDetector()
+        if collision_detector is None:
+            raise ValueError("collision_detector não poder ser None.")
+
+        self._collision_detector = collision_detector
         self._collision_ray = collision_ray
         self._avoid_distance = avoid_distance
 
-    def enter (self) -> None:
-        print(f"[DEBUG] {self._entity.ID} -> CollisionAvoidance")
-        self._entity.change_color("white")
-    
-    def exit (self) -> None:
-        pass
-    
-    def execute (self, delta_time: float) -> None:
+    def execute(self, delta_time: float) -> None:
         steering = self.get_steering()
         self._entity.apply_steering(steering, delta_time)
     
-    def get_steering (self) -> SteeringOutput:
-
+    def get_steering(self) -> SteeringOutput:
         if self._entity.velocity.length() == 0:
             return SteeringOutput()
 
@@ -42,6 +37,14 @@ class CollisionAvoidance(Seek):
         if not collision: 
             return SteeringOutput()
 
-        self.target = collision.position + collision.normal * self._avoid_distance    
+        target_position = collision.position + collision.normal * self._avoid_distance    
+        self._target.position = target_position
 
         return super().get_steering()
+    
+    def enter(self) -> None:
+        print(f"[DEBUG] {self._entity.ID} -> CollisionAvoidance")
+        self._entity.change_color("white")
+    
+    def exit(self) -> None:
+        pass

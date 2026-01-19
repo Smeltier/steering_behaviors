@@ -68,7 +68,6 @@ class SwarmState(State):
 
         return steering
 
-
     def _phi(self, position: pygame.Vector2) -> float:
         """
         Calcula a função phi(q_i, a) conforme a Equação (2) do artigo.

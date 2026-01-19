@@ -80,7 +80,7 @@ class MovingEntity(BaseGameEntity):
 
         self._acceleration = pygame.Vector2(0,0)
 
-        self._limit_entity()
+        # self._limit_entity()
 
     def change_color(self, color_name: str) -> None:
         """ Troca a cor da entidade. """
