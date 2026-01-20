@@ -15,7 +15,7 @@ class MovingEntity(BaseGameEntity):
 
     _velocity: pygame.Vector2
     _acceleration: pygame.Vector2
-    _angular_acceleration: int
+    _angular_acceleration: float
     _orientation: float
     _rotation: float
     _mass: float
@@ -38,7 +38,7 @@ class MovingEntity(BaseGameEntity):
         self._velocity = pygame.Vector2()
         self._acceleration = pygame.Vector2()
         self._color = pygame.Color(color_name)
-        self._state_machine = StateMachine(self, None)
+        self._state_machine = StateMachine(self)
         
         self._angular_acceleration = 0
         self._orientation = 0.0

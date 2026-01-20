@@ -20,7 +20,7 @@ def main():
 
     world = World(screen = SCREEN)
 
-    mouse_entity = MovingEntity(x = 0, y = 0, world = world, color='blue')
+    mouse_entity = MovingEntity(x = 0, y = 0, world = world, color_name='blue')
     world.add_entity(mouse_entity)
 
     radius_calculator = RadiusCalculator (
@@ -47,7 +47,7 @@ def main():
             BehaviorAndWeight(MaintainRadius(entity, mouse_entity, radius_calculator), weight=1)
         ]
         
-        entity.state_machine.change_state(BlendedSteering(entity, behaviors))
+        entity.change_state(BlendedSteering(entity, behaviors))
         return entity
 
     NUM_AGENTS: int = 10

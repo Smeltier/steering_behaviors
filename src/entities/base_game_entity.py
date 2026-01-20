@@ -8,9 +8,10 @@ if TYPE_CHECKING:
 
 class BaseGameEntity:
 
+    _ID: int
     _environment: 'World'
     _position: pygame.Vector2
-    _ID: int
+    
     _next_ID: int = 1000
 
     def __init__(self, x: float, y: float, world: 'World') -> None:

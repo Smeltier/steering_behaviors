@@ -20,10 +20,6 @@ class PathFollow(Arrive):
         self._current_index = 0
         self._waypoint_tolerance = waypoint_tolerance
 
-    def execute(self, delta_time) -> None:
-        steering = self.get_steering()
-        self.entity.apply_steering(steering=steering, delta_time=delta_time)
-
     def get_steering(self) -> SteeringOutput:
         if self._current_index >= len(self._waypoints):
             return SteeringOutput()
@@ -38,9 +34,12 @@ class PathFollow(Arrive):
 
         return super().get_steering()
 
+    def execute(self, delta_time) -> None:
+        steering = self.get_steering()
+        self.entity.apply_steering(steering=steering, delta_time=delta_time)
+
     def enter(self) -> None:
         print(f"[DEBUG] {self._entity.ID} -> PathFollow")
         self._entity.change_color("violet")
     
-    def exit(self) -> None: 
-        pass
+    def exit(self) -> None: pass
