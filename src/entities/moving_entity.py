@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 
 import pygame
 
+from src.bouding_circle import BoundingCircle
 from src.machines.state_machine import StateMachine
 from src.outputs.steering_output import SteeringOutput
 from src.entities.base_game_entity import BaseGameEntity
@@ -38,7 +39,9 @@ class MovingEntity(BaseGameEntity):
         self._velocity = pygame.Vector2()
         self._acceleration = pygame.Vector2()
         self._color = pygame.Color(color_name)
+
         self._state_machine = StateMachine(self)
+        self._collider = BoundingCircle(self, 8)
         
         self._angular_acceleration = 0
         self._orientation = 0.0
@@ -67,7 +70,7 @@ class MovingEntity(BaseGameEntity):
                             (int(line_end.x), int(line_end.y)), 2)
 
         pygame.draw.circle(screen, self.color, 
-                           (int(self._position.x), int(self._position.y)), 8)
+                           (int(self._position.x), int(self._position.y)), self._collider.radius)
 
     def apply_steering(self, steering: SteeringOutput, delta_time: float):
         self._velocity += steering.linear * delta_time
@@ -80,7 +83,7 @@ class MovingEntity(BaseGameEntity):
 
         self._acceleration = pygame.Vector2(0,0)
 
-        # self._limit_entity()
+        self._limit_entity()
 
     def change_color(self, color_name: str) -> None:
         """ Troca a cor da entidade. """
