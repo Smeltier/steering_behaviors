@@ -13,6 +13,7 @@ from src.states.blended_steering import BlendedSteering
 
 def main():
     pygame.init()
+    pygame.display.set_caption("BOIDS Simulation")
 
     WIDTH, HEIGHT = 1600, 800
     FPS = 60
@@ -22,7 +23,7 @@ def main():
 
     world = World(screen)
 
-    NUM_AGENTS = 20
+    NUM_AGENTS = 100
 
     agents = []
 
@@ -45,14 +46,14 @@ def main():
         wander_target = MovingEntity(0, 0, world) 
 
         behaviors = [
-            BehaviorAndWeight(Separation(agent), weight=2.0),
+            BehaviorAndWeight(Separation(agent), weight=7.0),
             BehaviorAndWeight(VelocityMatch(agent), weight=1.2),
             BehaviorAndWeight(Cohesion(agent, threshold=100), weight=1.0),
             BehaviorAndWeight(Wander(agent, wander_target), weight=0.2),
         ]
 
         blended = BlendedSteering(agent, behaviors)
-        agent.state_machine.change_state(blended)
+        agent.change_state(blended)
 
     running = True
     while running:
