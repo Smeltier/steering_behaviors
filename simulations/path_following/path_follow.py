@@ -22,6 +22,7 @@ class PathFollow(Arrive):
 
     def get_steering(self) -> SteeringOutput:
         if self._current_index >= len(self._waypoints):
+            # self._current_index = 0
             return SteeringOutput()
 
         current_target_position = self._waypoints[self._current_index]
