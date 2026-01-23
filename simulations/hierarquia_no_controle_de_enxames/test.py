@@ -2,11 +2,11 @@ import random
 
 import pygame
 
-from simulations.hierarquia_no_controle_de_enxames.swarm_state import SwarmState
 from simulations.hierarquia_no_controle_de_enxames.ellipse import Ellipse
 from src.outputs.behavior_and_weight import BehaviorAndWeight
 from src.states.blended_steering import BlendedSteering
 from src.entities.moving_entity import MovingEntity
+from src.states.swarm_state import SwarmState
 from src.states.separation import Separation
 from src.world import World
 
