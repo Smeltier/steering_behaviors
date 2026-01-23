@@ -3,10 +3,10 @@ import random
 
 import pygame
 
-from simulations.hierarquia_no_controle_de_enxames.swarm_state import SwarmState
+from src.states.swarm_state import SwarmState
 from simulations.hierarquia_no_controle_de_enxames.ellipse import Ellipse
 from simulations.path_following.grid_adapter import GridAdapter
-from simulations.path_following.path_follow import PathFollow
+from src.states.path_follow import PathFollow
 from src.outputs.behavior_and_weight import BehaviorAndWeight
 from src.states.blended_steering import BlendedSteering
 from src.entities.moving_entity import MovingEntity
@@ -82,24 +82,18 @@ def main():
             
         if waypoints:
             pygame.draw.lines(SCREEN, 'green', False, waypoints, 2)
+            
             for wp in waypoints:
                 pygame.draw.circle(SCREEN, 'red', wp, 3)
 
-
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_UP]:
-            ellipse._a += ROTATION_SPEED * delta_time
-        if keys[pygame.K_RIGHT]:
-            ellipse._b += ROTATION_SPEED * delta_time
-        if keys[pygame.K_DOWN]:
-            ellipse._a -= ROTATION_SPEED * delta_time
-        if keys[pygame.K_LEFT]:
-            ellipse._b -= ROTATION_SPEED * delta_time
-        if keys[pygame.K_q]:
-            ellipse._rotation -= ROTATION_SPEED * delta_time
-        if keys[pygame.K_e]:
-            ellipse._rotation += ROTATION_SPEED * delta_time
+        if keys[pygame.K_UP]:    ellipse._a += ROTATION_SPEED * delta_time
+        if keys[pygame.K_RIGHT]: ellipse._b += ROTATION_SPEED * delta_time
+        if keys[pygame.K_DOWN]:  ellipse._a -= ROTATION_SPEED * delta_time
+        if keys[pygame.K_LEFT]:  ellipse._b -= ROTATION_SPEED * delta_time
+        if keys[pygame.K_q]:     ellipse._rotation -= ROTATION_SPEED * delta_time
+        if keys[pygame.K_e]:     ellipse._rotation += ROTATION_SPEED * delta_time
 
         ellipse.draw(SCREEN)
         world.update(delta_time)
