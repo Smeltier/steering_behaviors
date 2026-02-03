@@ -7,13 +7,17 @@ class GridGraph:
 
     def get_successors(self, u: tuple[int, int]) -> list[tuple[int, int]]:
         x, y = u
-        neighbors = [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]
+
+        neighbors = [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1), 
+                     #(x + 1, y + 1),  (x - 1, y + 1), (x - 1, y - 1), (x + 1, y - 1)
+                     ]
         
         valid = []
         for n in neighbors:
             if 0 <= n[0] < self.width and 0 <= n[1] < self.height:
                 if n not in self.obstacles:
                     valid.append(n)
+
         return valid
 
     def get_predecessors(self, u: tuple[int, int]) -> list[tuple[int, int]]:
