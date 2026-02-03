@@ -18,7 +18,7 @@ SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 CLOCK = pygame.time.Clock()
 ROTATION_SPEED = 50.0
 NUM_ENTITIES = 20
-TILE_SIZE = 10
+TILE_SIZE = 40
 SPAWN_POS = (WIDTH / 3, HEIGHT / 2)
 FPS = 60
 

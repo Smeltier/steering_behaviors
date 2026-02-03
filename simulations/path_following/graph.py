@@ -2,7 +2,7 @@ import heapq
 
 class Graph:
 
-    _size: int
+    _size: int # G: Vértices
     _vertex_data: list[str]
     _adj_matrix: list[list[int]]
 
@@ -85,3 +85,7 @@ class Graph:
                     heapq.heappush(heap, (f, neighbor))
         
         return None
+    
+    @property
+    def size(self) -> int:
+        return self._size

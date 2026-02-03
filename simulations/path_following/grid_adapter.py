@@ -48,6 +48,18 @@ class GridAdapter:
             waypoints.append((world_x, world_y))
 
         return waypoints
+    
+    def update_dynamic_obstacle(self, world_pos, is_obstacle):
+        c, r = int(world_pos[0] // self._tile_size), int(world_pos[1] // self._tile_size)
+        u = self._get_index(c, r)
+        changes = []
+        for nc, nr, w in [(c + 1, r, 1.0), (c - 1, r, 1.0), (c, r + 1, 1.0), (c, r - 1, 1.0), 
+                          (c + 1, r + 1, 1.41), (c - 1, r - 1, 1.41), (c - 1, r + 1, 1.41), (c + 1, r - 1, 1.41)]:
+            if 0 <= nc < self._cols and 0 <= nr < self._rows:
+                v = self._get_index(nc, nr)
+                weight = float('inf') if is_obstacle else w
+                changes.append((u, v, weight))
+        return changes
 
     def _get_index(self, col, row) -> int:
         return row * self._cols + col
