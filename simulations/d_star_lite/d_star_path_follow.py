@@ -6,6 +6,7 @@ from src.outputs.steering_output import SteeringOutput
 from src.states.path_follow import PathFollow
 
 class DStarPathFollow(PathFollow):
+
     def __init__(self, entity, target, planner, graph, tile_size, **kwargs):
         super().__init__(entity, target, waypoints=[entity.position], **kwargs)
         self.planner = planner

@@ -12,9 +12,9 @@ from simulations.d_star_lite.grid_graph import GridGraph
 from src.world import World
 
 WIDTH, HEIGHT = 800, 600
-TILE_SIZE = 15
+TILE_SIZE = 20
 
-def heuristic(a, b):
+def heuristic(a, b): # G: Distância de Manhattan.
     return math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2)
 
 def random_free_node(graph):
