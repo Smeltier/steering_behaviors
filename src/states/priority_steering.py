@@ -30,7 +30,7 @@ class PrioritySteering (State):
         for group in self._groups:
             steering = group.get_steering()
 
-            if steering.linear.length() > self._epsilon or abs(steering.angular) > self.epsilon:
+            if steering.linear.length() > self._epsilon or abs(steering.angular) > self._epsilon:
                 return steering
             
         return SteeringOutput()
