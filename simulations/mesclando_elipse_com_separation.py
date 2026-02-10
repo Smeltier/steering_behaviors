@@ -2,7 +2,7 @@ import random
 
 import pygame
 
-from simulations.hierarquia_no_controle_de_enxames.ellipse import Ellipse
+from utils.ellipse import Ellipse
 from src.outputs.behavior_and_weight import BehaviorAndWeight
 from src.states.blended_steering import BlendedSteering
 from src.entities.moving_entity import MovingEntity

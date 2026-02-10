@@ -3,14 +3,14 @@ import random
 
 import pygame
 
-from src.states.swarm_state import SwarmState
-from simulations.hierarquia_no_controle_de_enxames.ellipse import Ellipse
-from simulations.path_following.grid_adapter import GridAdapter
-from src.states.path_follow import PathFollow
 from src.outputs.behavior_and_weight import BehaviorAndWeight
 from src.states.blended_steering import BlendedSteering
 from src.entities.moving_entity import MovingEntity
+from src.states.swarm_state import SwarmState
+from src.states.path_follow import PathFollow
 from src.states.separation import Separation
+from utils.grid_adapter import GridAdapter
+from utils.ellipse import Ellipse
 from src.world import World
 
 WIDTH, HEIGHT = 800, 800

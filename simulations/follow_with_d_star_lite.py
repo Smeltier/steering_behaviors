@@ -6,9 +6,9 @@ import random
 import pygame
 
 from src.entities.moving_entity import MovingEntity
-from simulations.d_star_lite.d_star_lite import DStarLite
-from simulations.d_star_lite.d_star_path_follow import DStarPathFollow
-from simulations.d_star_lite.grid_graph import GridGraph
+from utils.d_star_lite import DStarLite
+from src.states.d_star_path_follow import DStarPathFollow
+from utils.grid_graph import GridGraph
 from src.world import World
 
 WIDTH, HEIGHT = 800, 600
