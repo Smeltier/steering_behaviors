@@ -1,7 +1,7 @@
 import math
 import pygame
 
-from simulations.hierarquia_no_controle_de_enxames.ellipse import Ellipse
+from utils.ellipse import Ellipse
 from src.states.state import State
 from src.outputs.steering_output import SteeringOutput
 
