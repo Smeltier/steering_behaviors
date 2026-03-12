@@ -40,7 +40,7 @@ class Ellipse:
 
         rotated_surf = pygame.transform.rotate(shape_surface, -self._rotation)
         
-        rot_rect = rotated_surf.get_rect(center=(int(self._position.x), int(self._position.y)))
+        rot_rect = rotated_surf.get_rect(center=(int(self._position[0]), int(self._position[1])))
         surface.blit(rotated_surf, rot_rect)
 
     @property
