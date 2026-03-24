@@ -1,7 +1,9 @@
 import heapq
 
+from utils.grid_graph import GridGraph
+
 class DStarLite:
-    def __init__(self, graph, start, goal, heuristic):
+    def __init__(self, graph:GridGraph, start:tuple[int,int], goal:tuple[int,int], heuristic):
         self.graph = graph
         self.s_start = start
         self.s_goal = goal
@@ -26,9 +28,9 @@ class DStarLite:
             heapq.heappush(self.U, (self.calculate_key(u), u))
 
     def compute_shortest_path(self):
-        while self.U and (heapq.nsmallest(1, self.U)[0][0] < self.calculate_key(self.s_start) or 
+        while self.U and (heapq.nsmallest(1, self.U)[0][0] < self.calculate_key(self.s_start) or
                           self.rhs[self.s_start] != self.g[self.s_start]):
-            
+
             k_old, u = heapq.heappop(self.U)
             k_new = self.calculate_key(u)
 
