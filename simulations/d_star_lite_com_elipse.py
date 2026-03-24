@@ -4,7 +4,6 @@ import math
 import random
 
 import pygame
-from pygame.transform import threshold
 
 from src.outputs.behavior_and_weight import BehaviorAndWeight
 from src.states.priority_steering import PrioritySteering
@@ -24,7 +23,7 @@ TILE_SIZE = 20
 FPS = 60
 
 def heuristic(a:tuple[int,int], b:tuple[int,int]):
-    return abs(a[0] - b[0]) + abs(a[1] - b[1]) 
+    return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 def random_free_node(graph:GridGraph):
     while True:
@@ -70,7 +69,7 @@ def entity_maker(world, start_node, ellipse):
 
     world.add_entity(entity)
     return entity
-    
+
 
 def run():
     SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -104,12 +103,12 @@ def run():
     )
 
     follow_state = DStarPathFollow(
-        entity=entity, 
-        target=MovingEntity(0, 0, world=world), 
-        planner=planner, 
-        graph=graph, 
-        tile_size=TILE_SIZE, 
-        waypoint_tolerance=15.0, 
+        entity=entity,
+        target=MovingEntity(0, 0, world=world),
+        planner=planner,
+        graph=graph,
+        tile_size=TILE_SIZE,
+        waypoint_tolerance=15.0,
         slow_radius=40.0
     )
 
@@ -127,13 +126,13 @@ def run():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            
+
         SCREEN.fill((20, 20, 20))
 
         for x in range(0, WIDTH, TILE_SIZE):
             pygame.draw.line(SCREEN, (40, 40, 40), (x, 0), (x, HEIGHT))
         for y in range(0, HEIGHT, TILE_SIZE):
-            pygame.draw.line(SCREEN, (40, 40, 40), (0, y), (WIDTH, y)) 
+            pygame.draw.line(SCREEN, (40, 40, 40), (0, y), (WIDTH, y))
 
         for obs in graph.obstacles:
             pygame.draw.rect(
