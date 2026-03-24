@@ -1,20 +1,20 @@
 
 class GridGraph:
-    
+
     def __init__(self, width: int, height: int):
         self.width = width
         self.height = height
         self.nodes = [(x, y) for x in range(width) for y in range(height)]
-        self.obstacles = set()
+        self.obstacles: set[tuple[int,int]] = set()
 
     def get_successors(self, u: tuple[int, int]) -> list[tuple[int, int]]:
         x, y = u
 
-        neighbors = [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1), 
+        neighbors = [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1),
                      #(x + 1, y + 1),  (x - 1, y + 1), (x - 1, y - 1), (x + 1, y - 1)
                      ]
-        
-        valid = []
+
+        valid: list[tuple[int,int]] = []
         for n in neighbors:
             if 0 <= n[0] < self.width and 0 <= n[1] < self.height:
                 if n not in self.obstacles:
