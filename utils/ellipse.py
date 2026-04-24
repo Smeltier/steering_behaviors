@@ -60,6 +60,10 @@ class Ellipse:
     def rotation(self) -> float:
         return self._rotation
 
+    @rotation.setter
+    def rotation(self, value:float) -> None:
+        self._rotation = value
+
     @property
     def a(self) -> float:
         return self._a

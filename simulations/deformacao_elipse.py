@@ -9,8 +9,7 @@ from utils.grid_graph import GridGraph
 def random_free_node(graph:GridGraph):
     return random.choice(graph.nodes)
 
-
-def ellipse_collision_axes(center:tuple[int,int], a:float, b:float, rect:pygame.Rect):
+def ellipse_collision_axes(center:tuple[float, float], a:float, b:float, rect:pygame.Rect):
     if a <= 0 or b <= 0:
         return False, False, False
 
@@ -37,6 +36,19 @@ def ellipse_collision_axes(center:tuple[int,int], a:float, b:float, rect:pygame.
 
     return True, collide_a, collide_b
 
+def basic_colliding_detector(ellipse:Ellipse, colliding_a, colliding_b) -> None:
+    if colliding_a:
+        ellipse.a = max(MIN_A, ellipse.a - DA * delta_time)
+        ellipse.rotation += DR * delta_time
+    else:
+        ellipse.a = min(MAX_A, ellipse.a + DA * delta_time)
+
+    if colliding_b:
+        ellipse.b = max(MIN_B, ellipse.b - DB * delta_time)
+        ellipse.rotation -= DR * delta_time
+    else:
+        ellipse.b = min(MAX_B, ellipse.b + DB * delta_time)
+
 
 pygame.init()
 pygame.display.set_caption("Deformação")
@@ -51,6 +63,7 @@ CLOCK = pygame.time.Clock()
 MAX_A, MAX_B = 100, 100
 MIN_A, MIN_B = 10, 10
 DA, DB = 100, 100
+DR = 100
 
 ellipse = Ellipse(x=0, y=0, a=MAX_A, b=MAX_B)
 
@@ -83,15 +96,10 @@ while running:
             if colliding_a and colliding_b:
                 break
 
-    if colliding_a:
-        ellipse.a = max(MIN_A, ellipse.a - DA * delta_time)
-    else:
-        ellipse.a = min(MAX_A, ellipse.a + DA * delta_time)
+    # basic_colliding_detector(colliding_a, colliding_b)
+    # collision_with_volume_conservation(colliding_a, colliding_b)
+    basic_colliding_detector(ellipse, colliding_a, colliding_b)
 
-    if colliding_b:
-        ellipse.b = max(MIN_B, ellipse.b - DB * delta_time)
-    else:
-        ellipse.b = min(MAX_B, ellipse.b + DB * delta_time)
 
     SCREEN.fill(BD_COLOR)
 
