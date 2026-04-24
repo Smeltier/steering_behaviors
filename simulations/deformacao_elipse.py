@@ -5,6 +5,14 @@ import pygame
 from utils.ellipse import Ellipse
 from utils.grid_graph import GridGraph
 
+WIDTH, HEIGHT = 800, 600
+TILE_SIZE = 20
+FPS = 60
+MAX_A, MAX_B = 100, 100
+MIN_A, MIN_B = 10, 10
+DA, DB = 100, 100
+DR = 100
+
 
 def random_free_node(graph:GridGraph):
     return random.choice(graph.nodes)
@@ -49,79 +57,68 @@ def basic_colliding_detector(ellipse:Ellipse, colliding_a, colliding_b) -> None:
     else:
         ellipse.b = min(MAX_B, ellipse.b + DB * delta_time)
 
+if __name__ == '__main__':
+    pygame.init()
+    pygame.display.set_caption("Deformação")
 
-pygame.init()
-pygame.display.set_caption("Deformação")
+    BD_COLOR = pygame.Color("black")
+    SCREEN = pygame.display.set_mode(size=(WIDTH, HEIGHT))
+    CLOCK = pygame.time.Clock()
 
-WIDTH, HEIGHT = 800, 600
-TILE_SIZE = 20
-FPS = 60
-BD_COLOR = pygame.Color("black")
-SCREEN = pygame.display.set_mode(size=(WIDTH, HEIGHT))
-CLOCK = pygame.time.Clock()
+    ellipse = Ellipse(x=0, y=0, a=MAX_A, b=MAX_B)
 
-MAX_A, MAX_B = 100, 100
-MIN_A, MIN_B = 10, 10
-DA, DB = 100, 100
-DR = 100
+    graph = GridGraph(width=WIDTH//TILE_SIZE, height=HEIGHT//TILE_SIZE)
 
-ellipse = Ellipse(x=0, y=0, a=MAX_A, b=MAX_B)
+    for _ in range(100):
+        graph.obstacles.add(random_free_node(graph))
 
-graph = GridGraph(width=WIDTH//TILE_SIZE, height=HEIGHT//TILE_SIZE)
+    running = True
+    while running:
+        delta_time = CLOCK.tick(FPS) / 1000.0
 
-for _ in range(100):
-    graph.obstacles.add(random_free_node(graph))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
 
-running = True
-while running:
-    delta_time = CLOCK.tick(FPS) / 1000.0
+        mx, my = pygame.mouse.get_pos()
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+        ellipse_center: tuple[float, float] = (mx, my)
+        ellipse.position = pygame.Vector2(ellipse_center)
 
-    mx, my = pygame.mouse.get_pos()
+        colliding_a = False
+        colliding_b = False
+        for obs in graph.obstacles:
+            rect = pygame.Rect(obs[0] * TILE_SIZE, obs[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+            colliding, hit_a, hit_b = ellipse_collision_axes(ellipse_center, ellipse.a, ellipse.b, rect)
+            if colliding:
+                colliding_a = colliding_a or hit_a
+                colliding_b = colliding_b or hit_b
+                if colliding_a and colliding_b:
+                    break
 
-    ellipse_center: tuple[float, float] = (mx, my)
-    ellipse.position = pygame.Vector2(ellipse_center)
+        basic_colliding_detector(ellipse, colliding_a, colliding_b)
 
-    colliding_a = False
-    colliding_b = False
-    for obs in graph.obstacles:
-        rect = pygame.Rect(obs[0] * TILE_SIZE, obs[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE)
-        colliding, hit_a, hit_b = ellipse_collision_axes(ellipse_center, ellipse.a, ellipse.b, rect)
-        if colliding:
-            colliding_a = colliding_a or hit_a
-            colliding_b = colliding_b or hit_b
-            if colliding_a and colliding_b:
-                break
+        SCREEN.fill(BD_COLOR)
 
-    # basic_colliding_detector(colliding_a, colliding_b)
-    # collision_with_volume_conservation(colliding_a, colliding_b)
-    basic_colliding_detector(ellipse, colliding_a, colliding_b)
+        for x in range(0, WIDTH, TILE_SIZE):
+            pygame.draw.line(SCREEN, (40, 40, 40), (x, 0), (x, HEIGHT))
 
+        for y in range(0, HEIGHT, TILE_SIZE):
+            pygame.draw.line(SCREEN, (40, 40, 40), (0, y), (WIDTH, y))
 
-    SCREEN.fill(BD_COLOR)
+        for obs in graph.obstacles:
+            rect = (obs[0] * TILE_SIZE, obs[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+            pygame.draw.rect(SCREEN, "red", rect)
 
-    for x in range(0, WIDTH, TILE_SIZE):
-        pygame.draw.line(SCREEN, (40, 40, 40), (x, 0), (x, HEIGHT))
+        pygame.draw.circle(
+            surface=SCREEN,
+            color="white",
+            center=(mx, my),
+            radius=5
+        )
 
-    for y in range(0, HEIGHT, TILE_SIZE):
-        pygame.draw.line(SCREEN, (40, 40, 40), (0, y), (WIDTH, y))
+        ellipse.draw(surface=SCREEN)
 
-    for obs in graph.obstacles:
-        rect = (obs[0] * TILE_SIZE, obs[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE)
-        pygame.draw.rect(SCREEN, "red", rect)
+        pygame.display.flip()
 
-    pygame.draw.circle(
-        surface=SCREEN,
-        color="white",
-        center=(mx, my),
-        radius=5
-    )
-
-    ellipse.draw(surface=SCREEN)
-
-    pygame.display.flip()
-
-pygame.quit()
+    pygame.quit()
